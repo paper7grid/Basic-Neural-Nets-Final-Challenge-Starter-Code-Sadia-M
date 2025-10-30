@@ -4,7 +4,7 @@ import numpy as np
 plt.rcParams.update({'font.size': 8})
 # Load one row of data from the CSV file
 df = pd.read_csv('sign_mnist_13bal_train.csv')
-row = df.iloc[7]
+row = df.iloc[5]
 
 # Extract the image data (excluding the label)
 image_data = row[1:].values

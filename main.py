@@ -3,6 +3,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import  confusion_matrix, classification_report
 from sklearn.model_selection import train_test_split
 from collections import defaultdict
+from collections import Counter
 
 # Load the training dataset
 train_data = pd.read_csv('sign_mnist_13bal_train.csv')
@@ -11,6 +12,9 @@ train_data = pd.read_csv('sign_mnist_13bal_train.csv')
 X_train = train_data.drop('class', axis=1)  # Features (all columns except the first one)
 X_train = X_train / 255.0
 y_train = train_data['class']   # Target (first column)
+X_train, X_validate, y_train, y_validate = train_test_split(
+    X_train, y_train, test_size=10, random_state=2, stratify=y_train,
+)
 
 # Load the testing dataset
 test_data = pd.read_csv('sign_mnist_13bal_test.csv')
@@ -21,9 +25,15 @@ X_test = X_test / 255.0
 y_test = test_data['class']   # Target (first column)
 
 # Use this line to get you started on adding a validation dataset
-#X_train, X_validate, y_train, y_validate = train_test_split(X_train, y_train, test_size=10, random_state=0)
+#X_train, X_validate, y_train, y_validate = train_test_split(X_train, y_train, test_size=20, random_state=2)
 
-neural_net_model = MLPClassifier( hidden_layer_sizes=(8),random_state=42,tol=0.005)
+neural_net_model = MLPClassifier(
+    hidden_layer_sizes=(128, 64),
+    random_state=42,
+    tol=0.0001,
+    max_iter=500,
+    alpha=0.001
+)
 
 neural_net_model.fit(X_train, y_train)
 # Determine model architecture 
@@ -36,7 +46,15 @@ print(f"Layer sizes: {layer_size_str}")
 
 # predict the classes from the training and test sets
 y_pred_train = neural_net_model.predict(X_train)
+y_pred_val = neural_net_model.predict(X_validate) 
 y_pred = neural_net_model.predict(X_test)
+correct_val = 0
+for true, pred in zip(y_validate, y_pred_val):
+    if true == pred:
+        correct_val += 1
+
+val_accuracy = correct_val / len(y_validate) * 100
+print(f"Overall Validation Accuracy: {val_accuracy:.1f}%")
 
 # Create dictionaries to hold total and correct counts for each class
 correct_counts = defaultdict(int)
@@ -68,3 +86,16 @@ overall_accuracy = overall_correct / len(y_test)*100
 print(f"Overall Test Accuracy: {overall_accuracy:3.1f}%")
 overall_training_accuracy = correct_counts_training / total_counts_training*100
 print(f"Overall Training Accuracy: {overall_training_accuracy:3.1f}%")
+conf_matrix = confusion_matrix(y_test, y_pred)
+class_ids = sorted(total_counts.keys())
+
+# For better formatting
+print("Confusion Matrix:")
+print(f"{'':9s}", end='')
+for label in class_ids:
+    print(f"Class {label:2d} ", end='')
+print()  # Newline for next row
+
+for i, row in enumerate(conf_matrix):
+    print(f"Class {class_ids[i]}:", " ".join(f"{num:8d}" for num in row))
+print("The letters that it most misidentifies are E and O.")
