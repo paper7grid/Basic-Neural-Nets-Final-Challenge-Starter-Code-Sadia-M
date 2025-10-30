@@ -1,6 +1,12 @@
-# Styles & Signs Final Challenge Starter Code
+## ASL Neural Network Classifier
 
-This is a place for you to start building your Styles and Signs Final Challenge Project!
+# This project uses a neural network to classify American Sign Language (ASL) letters.
+
+### How to Run
+1. Download this repository.
+2. Open the "Fin/dist/" folder.
+3. Double-click "run_main.command" (Mac) or run `./main` in Terminal.
+
 
 ### Project Requirements
 Your project should:
