@@ -4,9 +4,22 @@ from sklearn.metrics import  confusion_matrix, classification_report
 from sklearn.model_selection import train_test_split
 from collections import defaultdict
 from collections import Counter
+import sys
+import os
+def get_resource_path(relative_path):
+    """Get absolute path to resource, works for dev and for PyInstaller."""
+    if getattr(sys, 'frozen', False):
+        # Running inside PyInstaller bundle
+        base_path = sys._MEIPASS
+    else:
+        # Running as a normal Python script
+        base_path = os.path.dirname(os.path.abspath(__file__))
+    
+    return os.path.join(base_path, relative_path)
 
 # Load the training dataset
-train_data = pd.read_csv('sign_mnist_13bal_train.csv')
+train_file_path = get_resource_path('sign_mnist_13bal_train.csv') # NEW LINE 1
+train_data = pd.read_csv(train_file_path)
 
 # Separate the data (features) and the  classes
 X_train = train_data.drop('class', axis=1)  # Features (all columns except the first one)
@@ -17,7 +30,8 @@ X_train, X_validate, y_train, y_validate = train_test_split(
 )
 
 # Load the testing dataset
-test_data = pd.read_csv('sign_mnist_13bal_test.csv')
+test_file_path = get_resource_path('sign_mnist_13bal_test.csv')   # NEW LINE 1
+test_data = pd.read_csv(test_file_path)                          # NEW LINE 2
 
 # Separate the data (features) and the  classes
 X_test = test_data.drop('class', axis=1)  # Features (all columns except the first one)
